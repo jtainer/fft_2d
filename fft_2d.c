@@ -49,5 +49,29 @@ void fft_2d(surface_complex surface) {
 }
 
 void ifft_2d(surface_complex surface) {
+	// 1D transform on each row
+	unsigned int n = surface.width;
+	float complex* sig = surface.data;
+	for(unsigned int y = 0; y < surface.height; y++) {
+		ifft_inpl(sig, n);
+		sig += n;
+	}
 
+	// 1D transform on each column
+	n = surface.height;
+	float complex* tmp = malloc(sizeof(float complex) * n);
+	for (unsigned int x = 0; x < surface.width; x++) {
+		// Column elements are not adjacent in memory
+		// Copy into temp buffer
+		for (unsigned int y = 0; y < n; y++) {
+			tmp[y] = surface.data[y * surface.width + x];
+		}
+		// Inverse transform on signal in temp buffer
+		ifft_inpl(tmp, n);
+		// Write temp buffer back to original buffer
+		for (unsigned int y = 0; y < n; y++) {
+			surface.data[y * surface.width + x] = tmp[y];
+		}
+	}
+	free(tmp);
 }
