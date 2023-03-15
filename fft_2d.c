@@ -48,6 +48,44 @@ void fft_2d(surface_complex surface) {
 	free(tmp);
 }
 
+void fft_2d_padded(surface_complex surface, unsigned int pad) {
+	// 1D transform on each row
+	unsigned int n = surface.width;
+	float complex* sig = surface.data;
+	for (unsigned int y = 0; y < surface.height; y++) {
+		fft_inpl(sig, n);
+		for (unsigned int x = 0; x < surface.width; x++) {
+			if (x < pad || x + pad > surface.width) sig[x] = 0;
+		}
+		sig += n;
+	}
+
+	// 1D transform on each column
+	n = surface.height;
+	float complex* tmp = malloc(sizeof(float complex) * n);
+	for (unsigned int x = 0; x < surface.width; x++) {
+		// Column elements are not adjacent in memory so they must be
+		// copied into a temporary buffer
+		for (unsigned int y = 0; y < n; y++) {
+			tmp[y] = surface.data[y * surface.width + x];
+		}
+		// Transform signal in temp buffer
+		fft_inpl(tmp, n);
+
+		// Pad colums with zero
+		for (unsigned int y = 0; y < surface.height; y++) {
+			if (y < pad || y + pad > surface.height) tmp[y] = 0;
+		}
+
+		// Write temp buffer back to original surface
+		for (unsigned int y = 0; y < n; y++) {
+			surface.data[y * surface.width + x] = tmp[y];
+		}
+	}
+	free(tmp);
+}
+
+
 void ifft_2d(surface_complex surface) {
 	// 1D transform on each row
 	unsigned int n = surface.width;
