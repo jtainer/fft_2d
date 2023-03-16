@@ -18,7 +18,6 @@ typedef struct surface_complex {
 surface_complex create_surface_complex(unsigned int width, unsigned int height);
 void destroy_surface_complex(surface_complex surface);
 void fft_2d(surface_complex surface);
-void fft_2d_padded(surface_complex surface, unsigned int pad);
 void ifft_2d(surface_complex surface);
 
 #endif
