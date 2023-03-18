@@ -8,7 +8,7 @@
 #include <raymath.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "fft_2d.h"
+#include "../fft_2d.h"
 
 surface_complex LoadSurfaceFromImage(Image image, char channel);
 Image LoadImageFromSurface(surface_complex surface);
@@ -16,7 +16,7 @@ void UpdateImageFromSurface(Image image, surface_complex surface, char channel);
 surface_complex UpscaleSurface(surface_complex surf_old, unsigned int scale);
 
 int main() {
-	Image original = LoadImage("flopping.png");
+	Image original = LoadImage("resources/flopping.png");
 	ImageFormat(&original, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
 	surface_complex r_old, g_old, b_old, a_old;
 	r_old = LoadSurfaceFromImage(original, 'r');
@@ -30,7 +30,7 @@ int main() {
 	fft_2d(b_old);
 	fft_2d(a_old);
 
-	unsigned int scale = 4;
+	unsigned int scale = 1;
 	surface_complex r_new, g_new, b_new, a_new;
 	r_new = UpscaleSurface(r_old, scale);
 	g_new = UpscaleSurface(g_old, scale);
